@@ -95,6 +95,12 @@ h2 {
   background: rgba(255, 177, 66, 0.08);
 }
 
+.install-button {
+  width: 100%;
+  margin: 18px 0 4px;
+  cursor: pointer;
+}
+
 .app-shell {
   max-width: 620px;
   margin: 0 auto;

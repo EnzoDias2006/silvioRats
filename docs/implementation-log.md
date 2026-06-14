@@ -7,6 +7,12 @@
 - Added Vue PWA app with install-only landing, standalone app shell, auth gate placeholder, feed view, hangouts view, admin view, and IndexedDB image cache utility.
 - Added Dockerfile, GitHub Actions GHCR deploy workflow, lefthook, Biome, and docs.
 
+## PWA Installability Fix
+
+- Added missing public PWA icons referenced by the web manifest and iOS metadata.
+- Added explicit manifest language, scope, portrait-primary orientation, and maskable icon purpose.
+- Added Android/desktop install prompt handling via `beforeinstallprompt`, keeping manual iOS instructions.
+
 ## Remaining Product Work
 
 - Complete BetterAuth UI flows for email/password sign-up and sign-in.

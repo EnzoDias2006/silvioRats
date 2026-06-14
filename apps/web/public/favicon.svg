@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="SilvioRats">
+  <rect width="512" height="512" rx="112" fill="#15100c"/>
+  <circle cx="382" cy="118" r="96" fill="#226f54" opacity="0.76"/>
+  <circle cx="130" cy="394" r="120" fill="#ffb142" opacity="0.22"/>
+  <path d="M150 334c24 35 64 56 106 56 70 0 126-56 126-126S326 138 256 138s-126 56-126 126" fill="none" stroke="#ffb142" stroke-width="34" stroke-linecap="round"/>
+  <path d="M202 234c12-24 36-38 64-38 44 0 78 34 78 78 0 50-44 78-88 78-35 0-65-19-82-47" fill="none" stroke="#fff7e8" stroke-width="28" stroke-linecap="round"/>
+  <circle cx="286" cy="248" r="18" fill="#fff7e8"/>
+</svg>

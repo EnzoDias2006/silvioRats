@@ -1,3 +1,8 @@
+export type BeforeInstallPromptEvent = Event & {
+  prompt: () => void;
+  userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
+};
+
 export function isStandalonePwa() {
   if (typeof window === "undefined") return false;
 
