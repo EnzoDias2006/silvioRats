@@ -5,8 +5,30 @@
 1. GitHub Actions installs dependencies with Bun.
 2. CI runs lint, typecheck, tests, and build.
 3. Docker image is built and pushed to GHCR.
-4. CI calls the Dokploy webhook.
-5. Dokploy pulls `ghcr.io/<owner>/<repo>:latest`.
+4. CI calls the Dokploy webhook only after GHCR push succeeds.
+5. Dokploy pulls `ghcr.io/enzodias2006/silviorats:latest`.
+
+## Image
+
+Use this image in Dokploy:
+
+```txt
+ghcr.io/enzodias2006/silviorats:latest
+```
+
+The workflow also publishes an immutable SHA tag:
+
+```txt
+ghcr.io/enzodias2006/silviorats:<commit-sha>
+```
+
+If the GitHub package is private, configure GHCR registry credentials in Dokploy before deploy.
+
+## GitHub Secrets
+
+Required repository secret:
+
+- `DOKPLOY_WEBHOOK_URL`
 
 ## Dokploy Environment
 
