@@ -59,5 +59,12 @@ jobs:
             org.opencontainers.image.revision=${{ github.sha }}
 
       - name: Trigger Dokploy
-        if: ${{ secrets.DOKPLOY_WEBHOOK_URL != '' }}
-        run: curl -fsSL -X POST "${{ secrets.DOKPLOY_WEBHOOK_URL }}"
+        env:
+          DOKPLOY_WEBHOOK_URL: ${{ secrets.DOKPLOY_WEBHOOK_URL }}
+        run: |
+          if [ -z "$DOKPLOY_WEBHOOK_URL" ]; then
+            echo "DOKPLOY_WEBHOOK_URL is not configured. Skipping Dokploy trigger."
+            exit 0
+          fi
+
+          curl -fsSL -X POST "$DOKPLOY_WEBHOOK_URL"
