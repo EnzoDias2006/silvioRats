@@ -38,6 +38,7 @@ const feed = useQuery({
         v-if="post.photos[0]"
         :photo-id="post.photos[0].id"
         :version="post.photos[0].version"
+        :url="post.photos[0].url"
         :alt="post.caption || `Foto de ${post.authorName}`"
       />
       <div v-else class="photo-placeholder">Sem foto neste registro.</div>

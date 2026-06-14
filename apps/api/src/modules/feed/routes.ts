@@ -3,7 +3,8 @@ import { maxUploadBytes } from "@silviorats/shared";
 import { desc, eq } from "drizzle-orm";
 import { Elysia, t } from "elysia";
 import { nanoid } from "nanoid";
-import { createDownloadUrl, createUploadUrl } from "../../lib/storage";
+import { env } from "../../lib/env";
+import { createUploadUrl } from "../../lib/storage";
 import { requireApprovedMember } from "../../middleware/session";
 
 export const feedRoutes = new Elysia({ prefix: "/feed" })
@@ -24,6 +25,8 @@ export const feedRoutes = new Elysia({ prefix: "/feed" })
       .where(eq(posts.instanceId, instanceId))
       .orderBy(desc(posts.occurredAt));
 
+    const publicBaseUrl = env.DO_SPACES_PUBLIC_URL;
+
     const feed = await Promise.all(
       rows.map(async (post) => {
         const postPhotos = await db.query.photos.findMany({
@@ -38,6 +41,7 @@ export const feedRoutes = new Elysia({ prefix: "/feed" })
             mimeType: photo.mimeType,
             width: photo.width,
             height: photo.height,
+            url: publicBaseUrl ? `${publicBaseUrl}${photo.s3Key}` : undefined,
           })),
         };
       }),
@@ -124,24 +128,5 @@ export const feedRoutes = new Elysia({ prefix: "/feed" })
         width: t.Optional(t.Number()),
         height: t.Optional(t.Number()),
       }),
-    },
-  )
-  .get(
-    "/photos/:photoId/download-url",
-    async ({ params, request }) => {
-      const { instanceId } = await requireApprovedMember(request);
-      const photo = await db.query.photos.findFirst({
-        where: eq(photos.id, params.photoId),
-        with: { post: true },
-      });
-
-      if (!photo || photo.post.instanceId !== instanceId) {
-        throw new Response("Photo not found", { status: 404 });
-      }
-
-      return { downloadUrl: await createDownloadUrl(photo.s3Key), version: photo.version };
-    },
-    {
-      params: t.Object({ photoId: t.String() }),
     },
   );

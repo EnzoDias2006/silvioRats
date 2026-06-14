@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { onBeforeUnmount, ref, watchEffect } from "vue";
-import { apiFetch, type DownloadUrlResponse } from "../../lib/api";
 import { fetchCachedImage } from "./imageCache";
 
 const props = defineProps<{
   photoId: string;
   version: string;
+  url?: string;
   alt: string;
 }>();
 
@@ -26,16 +26,17 @@ watchEffect(async () => {
   error.value = false;
   revokeObjectUrl();
 
+  if (!props.url) {
+    error.value = true;
+    loading.value = false;
+    return;
+  }
+
   try {
     const blob = await fetchCachedImage({
       photoId: props.photoId,
       version: props.version,
-      getDownloadUrl: async () => {
-        const result = await apiFetch<DownloadUrlResponse>(
-          `/feed/photos/${props.photoId}/download-url`,
-        );
-        return result.downloadUrl;
-      },
+      url: props.url,
     });
 
     objectUrl = URL.createObjectURL(blob);

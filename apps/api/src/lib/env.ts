@@ -11,6 +11,7 @@ const envSchema = z.object({
   DO_SPACES_ENDPOINT: z.string().url().optional(),
   DO_SPACES_REGION: z.string().default("nyc3"),
   DO_SPACES_BUCKET: z.string().optional(),
+  DO_SPACES_PUBLIC_URL: z.string().url().optional(),
   DO_SPACES_ACCESS_KEY_ID: z.string().optional(),
   DO_SPACES_SECRET_ACCESS_KEY: z.string().optional(),
   VAPID_PUBLIC_KEY: z.string().optional(),

@@ -29,6 +29,7 @@ export type FeedPhoto = {
   mimeType: string;
   width: number | null;
   height: number | null;
+  url?: string;
 };
 
 export type FeedPost = {
@@ -39,9 +40,4 @@ export type FeedPost = {
   authorName: string;
   authorImage: string | null;
   photos: FeedPhoto[];
-};
-
-export type DownloadUrlResponse = {
-  downloadUrl: string;
-  version: string;
 };
