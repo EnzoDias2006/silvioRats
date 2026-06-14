@@ -1,0 +1,25 @@
+{
+  "name": "silviorats",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "bun --filter @silviorats/api dev & bun --filter @silviorats/web dev",
+    "build": "bun --filter '*' build",
+    "lint": "biome check .",
+    "format": "biome format --write .",
+    "typecheck": "bun --filter '*' typecheck",
+    "test": "bun --filter '*' test",
+    "db:generate": "bun --filter @silviorats/db db:generate",
+    "db:migrate": "bun --filter @silviorats/db db:migrate",
+    "prepare": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 && lefthook install || true"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "latest",
+    "lefthook": "latest",
+    "typescript": "latest"
+  }
+}
