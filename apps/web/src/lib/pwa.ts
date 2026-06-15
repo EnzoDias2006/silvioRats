@@ -3,13 +3,25 @@ export type BeforeInstallPromptEvent = Event & {
   userChoice: Promise<{ outcome: "accepted" | "dismissed"; platform: string }>;
 };
 
+const standaloneDisplayModes = [
+  "standalone",
+  "fullscreen",
+  "minimal-ui",
+  "window-controls-overlay",
+] as const;
+
+function matchesStandaloneMode(mode: string) {
+  return window.matchMedia(`(display-mode: ${mode})`).matches;
+}
+
 export function isStandalonePwa() {
   if (typeof window === "undefined") return false;
 
   const navigatorWithStandalone = window.navigator as Navigator & { standalone?: boolean };
   return (
     navigatorWithStandalone.standalone === true ||
-    window.matchMedia("(display-mode: standalone)").matches
+    standaloneDisplayModes.some((mode) => matchesStandaloneMode(mode)) ||
+    document.referrer.startsWith("android-app://")
   );
 }
 

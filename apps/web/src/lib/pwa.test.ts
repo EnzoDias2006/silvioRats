@@ -1,5 +1,9 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { getInstallPlatform, isStandalonePwa } from "./pwa";
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+});
 
 describe("getInstallPlatform", () => {
   it("detects ios", () => {
@@ -19,6 +23,36 @@ describe("getInstallPlatform", () => {
 
 describe("isStandalonePwa", () => {
   it("returns false outside browser", () => {
+    expect(isStandalonePwa()).toBe(false);
+  });
+
+  it("detects standalone display mode", () => {
+    vi.stubGlobal("window", {
+      navigator: {},
+      matchMedia: (query: string) => ({ matches: query === "(display-mode: standalone)" }),
+    } as unknown as Window);
+    vi.stubGlobal("document", { referrer: "" } as unknown as Document);
+
+    expect(isStandalonePwa()).toBe(true);
+  });
+
+  it("detects android app referrer", () => {
+    vi.stubGlobal("window", {
+      navigator: {},
+      matchMedia: () => ({ matches: false }),
+    } as unknown as Window);
+    vi.stubGlobal("document", { referrer: "android-app://com.example" } as unknown as Document);
+
+    expect(isStandalonePwa()).toBe(true);
+  });
+
+  it("returns false for normal browser", () => {
+    vi.stubGlobal("window", {
+      navigator: {},
+      matchMedia: () => ({ matches: false }),
+    } as unknown as Window);
+    vi.stubGlobal("document", { referrer: "" } as unknown as Document);
+
     expect(isStandalonePwa()).toBe(false);
   });
 });

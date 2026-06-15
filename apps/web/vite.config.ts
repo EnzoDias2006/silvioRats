@@ -1,8 +1,17 @@
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 import vue from "@vitejs/plugin-vue";
 import { defineConfig } from "vite";
 import { VitePWA } from "vite-plugin-pwa";
 
+const rootDir = fileURLToPath(new URL("..", import.meta.url));
+
 export default defineConfig({
+  resolve: {
+    alias: {
+      "@silviorats/shared": path.resolve(rootDir, "../packages/shared/src/index.ts"),
+    },
+  },
   plugins: [
     vue(),
     VitePWA({
