@@ -118,8 +118,10 @@ li {
 
 .auth-page {
   width: 100%;
-  padding-top: calc(28px + env(safe-area-inset-top));
-  padding-bottom: calc(28px + env(safe-area-inset-bottom));
+  min-height: 100dvh;
+  align-content: start;
+  padding-top: calc(24px + env(safe-area-inset-top));
+  padding-bottom: calc(24px + env(safe-area-inset-bottom));
 }
 
 .install-card,
@@ -254,6 +256,15 @@ li {
   padding: clamp(24px, 4vw, 36px);
 }
 
+.auth-card h2 {
+  font-size: clamp(2rem, 8vw, 2.9rem);
+}
+
+.auth-card > p:not(.eyebrow) {
+  max-width: 28rem;
+  line-height: 1.45;
+}
+
 .post-card {
   display: grid;
   gap: 14px;
@@ -352,13 +363,13 @@ li {
 
 .auth-form {
   display: grid;
-  gap: 14px;
-  margin-top: 24px;
+  gap: 12px;
+  margin-top: 22px;
 }
 
 .field {
   display: grid;
-  gap: 8px;
+  gap: 7px;
 }
 
 .field label {
@@ -372,7 +383,8 @@ li {
 .field input {
   width: 100%;
   border: 1px solid rgba(255, 247, 232, 0.14);
-  border-radius: 18px;
+  border-radius: 17px;
+  min-height: 50px;
   padding: 14px 16px;
   color: var(--text);
   background: rgba(255, 255, 255, 0.06);
@@ -381,8 +393,8 @@ li {
 .primary-button,
 .ghost-button {
   border: 0;
-  border-radius: 18px;
-  min-height: 48px;
+  border-radius: 17px;
+  min-height: 50px;
   padding: 14px 16px;
   font-weight: 900;
 }
@@ -456,6 +468,12 @@ li {
   text-align: center;
 }
 
+@media (min-width: 700px) {
+  .auth-card {
+    width: min(100%, 560px);
+  }
+}
+
 @media (min-width: 900px) {
   :root {
     --page-gutter: 24px;
@@ -507,8 +525,17 @@ li {
 
   .install-card,
   .auth-card {
-    width: min(100%, 100%);
-    padding: 24px 18px;
+    width: min(100%, 360px);
+    padding: 22px 18px;
+  }
+
+  .auth-card h2 {
+    font-size: clamp(1.9rem, 9vw, 2.45rem);
+  }
+
+  .auth-page {
+    padding-top: calc(20px + env(safe-area-inset-top));
+    align-content: start;
   }
 
   .hero-action {
