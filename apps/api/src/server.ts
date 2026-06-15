@@ -29,11 +29,29 @@ async function bootstrapAdmin() {
   if (!env.BOOTSTRAP_ADMIN_EMAIL) return;
 
   const admin = await db.query.user.findFirst({ where: eq(user.email, env.BOOTSTRAP_ADMIN_EMAIL) });
-  if (!admin) return;
+  if (!admin) {
+    if (!env.BOOTSTRAP_ADMIN_PASSWORD) {
+      console.warn("Bootstrap admin skipped: password missing.");
+      return;
+    }
+
+    await auth.api.signUpEmail({
+      body: {
+        name: env.BOOTSTRAP_ADMIN_NAME,
+        email: env.BOOTSTRAP_ADMIN_EMAIL,
+        password: env.BOOTSTRAP_ADMIN_PASSWORD,
+      },
+    });
+  }
+
+  const resolvedAdmin =
+    admin ?? (await db.query.user.findFirst({ where: eq(user.email, env.BOOTSTRAP_ADMIN_EMAIL) }));
+
+  if (!resolvedAdmin) return;
 
   const existing = await db.query.memberships.findFirst({
     where: and(
-      eq(memberships.userId, admin.id),
+      eq(memberships.userId, resolvedAdmin.id),
       eq(memberships.instanceId, env.SILVIO_INSTANCE_ID),
     ),
   });
@@ -43,7 +61,7 @@ async function bootstrapAdmin() {
   await db
     .insert(memberships)
     .values({
-      userId: admin.id,
+      userId: resolvedAdmin.id,
       instanceId: env.SILVIO_INSTANCE_ID,
       status: "approved",
       role: "admin",

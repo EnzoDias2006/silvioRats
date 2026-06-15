@@ -9,4 +9,9 @@ describe("env", () => {
   it("parses trusted app urls list", () => {
     expect(env.APP_URLS).toEqual([]);
   });
+
+  it("loads bootstrap admin defaults", () => {
+    expect(env.BOOTSTRAP_ADMIN_NAME).toBe("Admin");
+    expect(env.BOOTSTRAP_ADMIN_PASSWORD).toBeUndefined();
+  });
 });

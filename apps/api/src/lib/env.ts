@@ -18,6 +18,8 @@ const envSchema = z.object({
   BETTER_AUTH_SECRET: z.string().min(32).default("dev-secret-change-me-dev-secret-change-me"),
   SILVIO_INSTANCE_ID: z.string().min(8).default("silvio-local"),
   BOOTSTRAP_ADMIN_EMAIL: z.string().email().optional(),
+  BOOTSTRAP_ADMIN_NAME: z.string().default("Admin"),
+  BOOTSTRAP_ADMIN_PASSWORD: z.string().min(8).optional(),
   DO_SPACES_ENDPOINT: z.string().url().optional(),
   DO_SPACES_REGION: z.string().default("nyc3"),
   DO_SPACES_BUCKET: z.string().optional(),
