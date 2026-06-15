@@ -64,11 +64,7 @@ async function submit() {
       {{ loading ? "Aguarde..." : mode === "signin" ? "Entrar" : "Criar conta" }}
     </button>
 
-    <button
-      class="ghost-button"
-      type="button"
-      @click="mode = mode === 'signin' ? 'signup' : 'signin'"
-    >
+    <button class="ghost-button" type="button" @click="mode = mode === 'signin' ? 'signup' : 'signin'">
       {{ mode === "signin" ? "Criar conta" : "Ja tenho conta" }}
     </button>
   </form>

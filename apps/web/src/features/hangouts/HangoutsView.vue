@@ -20,14 +20,17 @@ const hangouts = useQuery({
     <div>
       <p class="eyebrow">Encontros</p>
       <h2>Marca a hora. O resto acontece.</h2>
+      <p class="lead">Lista simples, legivel e sem excesso.</p>
     </div>
   </section>
 
   <section v-if="hangouts.isLoading.value" class="state-card">Carregando encontros...</section>
   <section v-else class="feed-list">
     <article v-for="hangout in hangouts.data.value" :key="hangout.id" class="post-card compact">
-      <strong>{{ hangout.title }}</strong>
-      <span>{{ new Date(hangout.startsAt).toLocaleString("pt-BR") }}</span>
+      <header class="post-meta">
+        <strong>{{ hangout.title }}</strong>
+        <span>{{ new Date(hangout.startsAt).toLocaleString("pt-BR") }}</span>
+      </header>
       <p v-if="hangout.note">{{ hangout.note }}</p>
     </article>
   </section>

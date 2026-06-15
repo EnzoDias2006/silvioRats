@@ -21,6 +21,7 @@ const feed = useQuery({
     <div>
       <p class="eyebrow">Feed permanente</p>
       <h2>Fotos, horarios, historias.</h2>
+      <p class="lead">Poste rapido. Leia sem ruído. Mantenha a bolha viva.</p>
     </div>
     <button class="round-action" type="button" aria-label="Postar foto" @click="composerOpen = true">
       <Camera :size="24" />
@@ -34,6 +35,11 @@ const feed = useQuery({
 
   <section v-else class="feed-list">
     <article v-for="post in feed.data.value" :key="post.id" class="post-card">
+      <header class="post-meta">
+        <strong>{{ post.authorName }}</strong>
+        <span>{{ formatDistanceToNow(new Date(post.occurredAt), { addSuffix: true, locale: ptBR }) }}</span>
+      </header>
+
       <CachedPhoto
         v-if="post.photos[0]"
         :photo-id="post.photos[0].id"
@@ -43,16 +49,13 @@ const feed = useQuery({
       />
       <div v-else class="photo-placeholder">Sem foto neste registro.</div>
 
-      <div class="post-meta">
-        <strong>{{ post.authorName }}</strong>
-        <span>{{ formatDistanceToNow(new Date(post.occurredAt), { addSuffix: true, locale: ptBR }) }}</span>
-      </div>
       <p v-if="post.caption">{{ post.caption }}</p>
     </article>
 
     <article v-if="feed.data.value?.length === 0" class="state-card">
       <p class="eyebrow">Sem memorias ainda</p>
       <h2>Primeira foto paga a rodada.</h2>
+      <p>Quando alguem postar, o feed ganha vida aqui.</p>
     </article>
   </section>
 </template>

@@ -103,6 +103,7 @@ async function submit() {
       <div>
         <p class="eyebrow">Nova memoria</p>
         <h2>Postar foto</h2>
+        <p class="lead">Uma foto, uma legenda curta, sem bagunça.</p>
       </div>
       <button class="ghost-icon" type="button" @click="emit('close')">Fechar</button>
     </div>

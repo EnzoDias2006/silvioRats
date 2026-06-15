@@ -42,6 +42,7 @@ async function decide(userId: string, decision: "approve" | "reject") {
     <div>
       <p class="eyebrow">Admin</p>
       <h2>Pedidos da bolha.</h2>
+      <p class="lead">Aprovar rapido. Rejeitar sem confusao.</p>
     </div>
   </section>
 
@@ -51,7 +52,10 @@ async function decide(userId: string, decision: "approve" | "reject") {
     <p v-if="actionError" class="form-error">{{ actionError }}</p>
 
     <article v-for="request in requests.data.value" :key="request.userId" class="post-card compact">
-      <strong>{{ request.name }}</strong>
+      <header class="post-meta">
+        <strong>{{ request.name }}</strong>
+        <span>{{ request.createdAt ? new Date(request.createdAt).toLocaleString("pt-BR") : "Novo pedido" }}</span>
+      </header>
       <span>{{ request.email }}</span>
       <div class="admin-actions">
         <button
@@ -76,6 +80,7 @@ async function decide(userId: string, decision: "approve" | "reject") {
     <article v-if="requests.data.value?.length === 0" class="state-card">
       <p class="eyebrow">Fila limpa</p>
       <h2>Ninguem esperando.</h2>
+      <p>Volte depois. Nada para aprovar agora.</p>
     </article>
   </section>
 </template>
