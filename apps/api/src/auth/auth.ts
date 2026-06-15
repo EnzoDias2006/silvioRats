@@ -12,7 +12,7 @@ export const auth = betterAuth({
   emailAndPassword: {
     enabled: true,
   },
-  trustedOrigins: [env.APP_URL],
+  trustedOrigins: [env.APP_URL, ...env.APP_URLS],
 });
 
 export type AuthSession = typeof auth.$Infer.Session;

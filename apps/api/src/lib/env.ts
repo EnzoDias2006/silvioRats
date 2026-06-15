@@ -4,6 +4,16 @@ const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   PORT: z.coerce.number().default(3000),
   APP_URL: z.string().url().default("http://localhost:5173"),
+  APP_URLS: z
+    .string()
+    .default("")
+    .transform((value) =>
+      value
+        .split(",")
+        .map((entry) => entry.trim())
+        .filter(Boolean),
+    )
+    .pipe(z.array(z.string().url())),
   API_URL: z.string().url().default("http://localhost:3000"),
   BETTER_AUTH_SECRET: z.string().min(32).default("dev-secret-change-me-dev-secret-change-me"),
   SILVIO_INSTANCE_ID: z.string().min(8).default("silvio-local"),

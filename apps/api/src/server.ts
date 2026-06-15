@@ -100,7 +100,7 @@ function serveIndex() {
 const app = new Elysia()
   .use(
     cors({
-      origin: env.APP_URL,
+      origin: [env.APP_URL, ...env.APP_URLS],
       credentials: true,
     }),
   )
