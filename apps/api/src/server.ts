@@ -80,6 +80,14 @@ function serveWebFile(relativePath: string) {
   });
 }
 
+function isStaticAssetPath(path: string) {
+  return /\.[a-z0-9]+$/i.test(path);
+}
+
+function isManifestAssetPath(path: string) {
+  return path === "/manifest.webmanifest" || path === "/sw.js" || path.startsWith("/pwa-");
+}
+
 function serveIndex() {
   const indexPath = join(webDistPath, "index.html");
   if (!existsSync(indexPath)) return new Response("Web app not built", { status: 503 });
@@ -128,7 +136,16 @@ const app = new Elysia()
     return { user: session.user, membership };
   })
   .group("/api", (api) => api.use(feedRoutes).use(hangoutRoutes).use(adminRoutes).use(pushRoutes))
-  .get("/*", ({ path }) => serveWebFile(path) ?? serveIndex())
+  .get("/*", ({ path }) => {
+    const staticAsset = serveWebFile(path);
+    if (staticAsset) return staticAsset;
+
+    if (isManifestAssetPath(path) || isStaticAssetPath(path)) {
+      return new Response("Not Found", { status: 404 });
+    }
+
+    return serveIndex();
+  })
   .onError(({ error, code }) => {
     if (error instanceof Response) return error;
     if (!isProduction) console.error(code, error);

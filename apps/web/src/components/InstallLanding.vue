@@ -5,15 +5,22 @@ import { type BeforeInstallPromptEvent, getInstallPlatform } from "../lib/pwa";
 const platform = getInstallPlatform();
 const installPrompt = ref<BeforeInstallPromptEvent | null>(null);
 const isInstalled = ref(false);
+const installHintVisible = ref(false);
+function detectChromeAndroid(userAgent = navigator.userAgent) {
+  const ua = userAgent.toLowerCase();
+  return /android/.test(ua) && /chrome/.test(ua) && !/edg|opr|samsungbrowser|firefox/.test(ua);
+}
 
 function handleBeforeInstallPrompt(event: Event) {
   event.preventDefault();
   installPrompt.value = event as BeforeInstallPromptEvent;
+  installHintVisible.value = true;
 }
 
 function handleAppInstalled() {
   isInstalled.value = true;
   installPrompt.value = null;
+  installHintVisible.value = false;
 }
 
 async function installApp() {
@@ -26,8 +33,15 @@ async function installApp() {
 }
 
 onMounted(() => {
+  detectChromeAndroid();
   window.addEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
   window.addEventListener("appinstalled", handleAppInstalled);
+
+  window.setTimeout(() => {
+    if (!installPrompt.value) {
+      installHintVisible.value = true;
+    }
+  }, 1500);
 });
 
 onBeforeUnmount(() => {
@@ -61,10 +75,15 @@ onBeforeUnmount(() => {
           Instalar app
         </button>
         <p v-if="isInstalled">Instalado. Agora abra pelo icone SilvioRats.</p>
+        <p v-else-if="installHintVisible && !installPrompt">
+          Se aparecer só “Adicionar à tela inicial”, recarregue a pagina depois do deploy ou limpe os dados do site no
+          Chrome. O app precisa ser servido com icon PNG valido para aparecer como PWA.
+        </p>
         <ol v-else>
           <li>Abra esta pagina no Chrome.</li>
-          <li>Toque em “Instalar app” ou use o menu.</li>
-          <li>Abra pelo icone SilvioRats.</li>
+          <li>Toque em “Instalar app” ou use o menu ⋮ &gt; “Instalar app”.</li>
+          <li>Se ver apenas “Adicionar à tela inicial”, o Chrome ainda nao reconheceu o PWA.</li>
+          <li>Abra pelo icone SilvioRats depois da instalacao.</li>
         </ol>
       </div>
 
@@ -74,7 +93,8 @@ onBeforeUnmount(() => {
           Instalar app
         </button>
         <p v-if="isInstalled">Instalado. Agora abra pelo icone SilvioRats.</p>
-        <p v-else>Use Chrome ou Edge com HTTPS para instalar, ou abra no celular.</p>
+        <p v-else-if="installHintVisible">Use Chrome ou Edge com HTTPS para instalar, ou abra no celular.</p>
+        <p v-else>Instalacao disponivel apos o navegador reconhecer o PWA.</p>
       </div>
     </section>
   </main>
