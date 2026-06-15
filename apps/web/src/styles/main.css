@@ -104,14 +104,22 @@ li {
 }
 
 .install-page,
+.auth-page,
 .app-shell {
   min-height: 100vh;
 }
 
-.install-page {
+.install-page,
+.auth-page {
   display: grid;
   place-items: center;
   padding: 24px var(--page-gutter);
+}
+
+.auth-page {
+  width: 100%;
+  padding-top: calc(28px + env(safe-area-inset-top));
+  padding-bottom: calc(28px + env(safe-area-inset-bottom));
 }
 
 .install-card,
@@ -238,6 +246,12 @@ li {
 
 .state-card {
   border-color: rgba(255, 247, 232, 0.1);
+}
+
+.auth-card {
+  width: min(100%, 560px);
+  margin-inline: auto;
+  padding: clamp(24px, 4vw, 36px);
 }
 
 .post-card {
@@ -448,6 +462,11 @@ li {
     --content-width: 720px;
   }
 
+  .install-page,
+  .auth-page {
+    padding-inline: 24px;
+  }
+
   .app-shell {
     width: min(100%, 1120px);
     padding-bottom: calc(120px + env(safe-area-inset-bottom));
@@ -486,7 +505,9 @@ li {
     --page-gutter: 14px;
   }
 
-  .install-card {
+  .install-card,
+  .auth-card {
+    width: min(100%, 100%);
     padding: 24px 18px;
   }
 

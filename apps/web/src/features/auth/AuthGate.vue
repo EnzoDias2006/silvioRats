@@ -17,26 +17,28 @@ function refreshSession() {
 </script>
 
 <template>
-  <section v-if="me.isLoading.value" class="state-card">Carregando sessao...</section>
+  <main class="auth-page">
+    <section v-if="me.isLoading.value" class="state-card auth-card">Carregando sessao...</section>
 
-  <section v-else-if="me.isError.value" class="state-card auth-card">
-    <p class="eyebrow">Entrar</p>
-    <h2>Sua mesa te espera.</h2>
-    <p>Crie sua conta ou entre. Um admin libera sua entrada na bolha.</p>
-    <AuthForm @authenticated="refreshSession" />
-  </section>
+    <section v-else-if="me.isError.value" class="state-card auth-card">
+      <p class="eyebrow">Entrar</p>
+      <h2>Sua mesa te espera.</h2>
+      <p>Crie sua conta ou entre. Um admin libera sua entrada na bolha.</p>
+      <AuthForm @authenticated="refreshSession" />
+    </section>
 
-  <section v-else-if="me.data.value?.membership.status === 'pending'" class="state-card">
-    <p class="eyebrow">Aguardando admin</p>
-    <h2>Pedido enviado.</h2>
-    <p>Um admin precisa aprovar sua entrada na bolha do Silvio.</p>
-  </section>
+    <section v-else-if="me.data.value?.membership.status === 'pending'" class="state-card auth-card">
+      <p class="eyebrow">Aguardando admin</p>
+      <h2>Pedido enviado.</h2>
+      <p>Um admin precisa aprovar sua entrada na bolha do Silvio.</p>
+    </section>
 
-  <section v-else-if="me.data.value?.membership.status !== 'approved'" class="state-card">
-    <p class="eyebrow">Acesso bloqueado</p>
-    <h2>Conta sem acesso.</h2>
-    <p>Fale com um admin se isto parece errado.</p>
-  </section>
+    <section v-else-if="me.data.value?.membership.status !== 'approved'" class="state-card auth-card">
+      <p class="eyebrow">Acesso bloqueado</p>
+      <h2>Conta sem acesso.</h2>
+      <p>Fale com um admin se isto parece errado.</p>
+    </section>
 
-  <slot v-else />
+    <slot v-else />
+  </main>
 </template>
