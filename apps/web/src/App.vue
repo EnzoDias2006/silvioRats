@@ -6,7 +6,12 @@ import AuthGate from "./features/auth/AuthGate.vue";
 import { isStandalonePwa } from "./lib/pwa";
 
 const standalone = ref(isStandalonePwa());
-const standaloneModes = ["standalone", "fullscreen", "minimal-ui", "window-controls-overlay"] as const;
+const standaloneModes = [
+  "standalone",
+  "fullscreen",
+  "minimal-ui",
+  "window-controls-overlay",
+] as const;
 const mediaQueries: MediaQueryList[] = [];
 
 function refreshStandaloneState() {

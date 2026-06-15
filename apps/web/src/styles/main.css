@@ -52,7 +52,8 @@ body::before {
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background-image: linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
   background-size: 72px 72px;
   mask-image: radial-gradient(circle at center, black, transparent 85%);
@@ -305,8 +306,7 @@ li {
   place-items: center;
   color: var(--text-soft);
   background:
-    linear-gradient(135deg, rgba(255, 177, 66, 0.24), transparent),
-    rgba(255, 255, 255, 0.06);
+    linear-gradient(135deg, rgba(255, 177, 66, 0.24), transparent), rgba(255, 255, 255, 0.06);
 }
 
 .feed-photo {
@@ -352,7 +352,10 @@ li {
   color: var(--text-soft);
   font-size: 0.72rem;
   font-weight: 700;
-  transition: background-color 160ms ease, color 160ms ease, transform 160ms ease;
+  transition:
+    background-color 160ms ease,
+    color 160ms ease,
+    transform 160ms ease;
 }
 
 .nav-item.router-link-active {
