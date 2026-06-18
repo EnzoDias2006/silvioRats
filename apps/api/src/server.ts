@@ -51,7 +51,9 @@ async function bootstrapAdmin() {
       },
     });
 
-    resolvedAdmin = await db.query.user.findFirst({ where: eq(user.email, env.BOOTSTRAP_ADMIN_EMAIL) });
+    resolvedAdmin = await db.query.user.findFirst({
+      where: eq(user.email, env.BOOTSTRAP_ADMIN_EMAIL),
+    });
   }
 
   if (!resolvedAdmin) return;

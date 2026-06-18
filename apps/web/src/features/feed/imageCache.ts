@@ -21,9 +21,7 @@ export async function fetchCachedImage(input: { photoId: string; version: string
   const cached = await getCachedImage(input.photoId, input.version);
   if (cached) return cached;
 
-  const response = await fetch(
-    `/api/feed/photos/${input.photoId}/image?version=${input.version}`,
-  );
+  const response = await fetch(`/api/feed/photos/${input.photoId}/image?version=${input.version}`);
   if (!response.ok) throw new Error("Failed to download image");
 
   const blob = await response.blob();
