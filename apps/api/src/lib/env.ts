@@ -20,6 +20,10 @@ const envSchema = z.object({
   BOOTSTRAP_ADMIN_EMAIL: z.string().email().optional(),
   BOOTSTRAP_ADMIN_NAME: z.string().default("Admin"),
   BOOTSTRAP_ADMIN_PASSWORD: z.string().min(8).optional(),
+  BOOTSTRAP_ADMIN_FORCE_RESET: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((value) => value === "true"),
   DO_SPACES_ENDPOINT: z.string().url().optional(),
   DO_SPACES_REGION: z.string().default("nyc3"),
   DO_SPACES_BUCKET: z.string().optional(),

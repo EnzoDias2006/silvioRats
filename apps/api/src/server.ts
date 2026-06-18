@@ -29,10 +29,18 @@ async function bootstrapAdmin() {
   if (!env.BOOTSTRAP_ADMIN_EMAIL) return;
 
   const admin = await db.query.user.findFirst({ where: eq(user.email, env.BOOTSTRAP_ADMIN_EMAIL) });
-  if (!admin) {
+  let resolvedAdmin = admin;
+
+  if (!admin || env.BOOTSTRAP_ADMIN_FORCE_RESET) {
     if (!env.BOOTSTRAP_ADMIN_PASSWORD) {
       console.warn("Bootstrap admin skipped: password missing.");
       return;
+    }
+
+    if (admin && env.BOOTSTRAP_ADMIN_FORCE_RESET) {
+      await db.delete(memberships).where(eq(memberships.userId, admin.id));
+      await db.delete(user).where(eq(user.id, admin.id));
+      resolvedAdmin = undefined;
     }
 
     await auth.api.signUpEmail({
@@ -42,10 +50,9 @@ async function bootstrapAdmin() {
         password: env.BOOTSTRAP_ADMIN_PASSWORD,
       },
     });
-  }
 
-  const resolvedAdmin =
-    admin ?? (await db.query.user.findFirst({ where: eq(user.email, env.BOOTSTRAP_ADMIN_EMAIL) }));
+    resolvedAdmin = await db.query.user.findFirst({ where: eq(user.email, env.BOOTSTRAP_ADMIN_EMAIL) });
+  }
 
   if (!resolvedAdmin) return;
 
