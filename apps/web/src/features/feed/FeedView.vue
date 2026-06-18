@@ -20,8 +20,8 @@ const feed = useQuery({
   <section class="hero-action">
     <div>
       <p class="eyebrow">Feed permanente</p>
-      <h2>Fotos, horarios, historias.</h2>
-      <p class="lead">Poste rapido. Leia sem ruído. Mantenha a bolha viva.</p>
+      <h2>Fotos, horas e memoria viva.</h2>
+      <p class="lead">Leitura limpa, sem camada extra. O foco fica no post.</p>
     </div>
     <button class="round-action" type="button" aria-label="Postar foto" @click="composerOpen = true">
       <Camera :size="24" />

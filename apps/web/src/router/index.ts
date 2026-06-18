@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import AdminView from "../features/admin/AdminView.vue";
 import FeedView from "../features/feed/FeedView.vue";
 import HangoutsView from "../features/hangouts/HangoutsView.vue";
+import ProfileView from "../features/profile/ProfileView.vue";
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -9,5 +10,6 @@ export const router = createRouter({
     { path: "/", component: FeedView },
     { path: "/hangouts", component: HangoutsView },
     { path: "/admin", component: AdminView },
+    { path: "/profile", component: ProfileView },
   ],
 });
