@@ -17,6 +17,13 @@ function matchesStandaloneMode(mode: string) {
 export function isStandalonePwa() {
   if (typeof window === "undefined") return false;
 
+  // Allow bypass for local testing via VITE env var
+  try {
+    if (import.meta.env.VITE_BYPASS_PWA_CHECK === "true") return true;
+  } catch {
+    /* import.meta.env not available */
+  }
+
   const navigatorWithStandalone = window.navigator as Navigator & { standalone?: boolean };
   return (
     navigatorWithStandalone.standalone === true ||

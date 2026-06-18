@@ -1,8 +1,9 @@
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { getInstallPlatform, isStandalonePwa } from "./pwa";
 
 afterEach(() => {
   vi.unstubAllGlobals();
+  vi.unstubAllEnvs();
 });
 
 describe("getInstallPlatform", () => {
@@ -22,6 +23,10 @@ describe("getInstallPlatform", () => {
 });
 
 describe("isStandalonePwa", () => {
+  beforeEach(() => {
+    vi.stubEnv("VITE_BYPASS_PWA_CHECK", "");
+  });
+
   it("returns false outside browser", () => {
     expect(isStandalonePwa()).toBe(false);
   });

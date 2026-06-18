@@ -7,6 +7,7 @@ import { VitePWA } from "vite-plugin-pwa";
 const rootDir = fileURLToPath(new URL("..", import.meta.url));
 
 export default defineConfig({
+  envDir: "../..",
   resolve: {
     alias: {
       "@silviorats/shared": path.resolve(rootDir, "../packages/shared/src/index.ts"),
