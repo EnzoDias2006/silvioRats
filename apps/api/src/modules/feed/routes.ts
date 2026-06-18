@@ -3,10 +3,16 @@ import { maxUploadBytes } from "@silviorats/shared";
 import { desc, eq } from "drizzle-orm";
 import { Elysia, t } from "elysia";
 import { nanoid } from "nanoid";
-import { getImageStream, putImage } from "../../lib/storage";
+import { buildStorageKey, createUploadUrl, getImageStream, putImage } from "../../lib/storage";
 import { requireApprovedMember } from "../../middleware/session";
 
 const allowedMimeTypes = ["image/webp", "image/jpeg", "image/png"] as const;
+
+function getPhotoExtension(contentType: string) {
+  if (contentType === "image/jpeg") return "jpg";
+  if (contentType === "image/png") return "png";
+  return "webp";
+}
 
 export const feedRoutes = new Elysia({ prefix: "/feed" })
   .get("/", async ({ request }) => {
@@ -71,6 +77,69 @@ export const feedRoutes = new Elysia({ prefix: "/feed" })
     },
   )
   .post(
+    "/posts/:postId/photos/presign",
+    async ({ body, params, request }) => {
+      const { instanceId } = await requireApprovedMember(request);
+
+      if (!(allowedMimeTypes as readonly string[]).includes(body.mimeType)) {
+        throw new Response("Unsupported media type", { status: 415 });
+      }
+
+      if (body.sizeBytes > maxUploadBytes) {
+        throw new Response("File too large", { status: 413 });
+      }
+
+      const post = await db.query.posts.findFirst({
+        where: eq(posts.id, params.postId),
+      });
+
+      if (!post || post.instanceId !== instanceId) {
+        throw new Response("Post not found", { status: 404 });
+      }
+
+      const photoId = nanoid();
+      const version = nanoid(10);
+      const key = buildStorageKey({
+        instanceId,
+        postId: params.postId,
+        photoId,
+        extension: getPhotoExtension(body.mimeType),
+      });
+
+      await db.insert(photos).values({
+        id: photoId,
+        postId: params.postId,
+        s3Key: key,
+        mimeType: body.mimeType,
+        sizeBytes: body.sizeBytes,
+        version,
+      });
+
+      const upload = await createUploadUrl({
+        key,
+        contentType: body.mimeType,
+      });
+
+      return {
+        photoId,
+        version,
+        key,
+        ...upload,
+      };
+    },
+    {
+      params: t.Object({ postId: t.String() }),
+      body: t.Object({
+        mimeType: t.Union([
+          t.Literal("image/webp"),
+          t.Literal("image/jpeg"),
+          t.Literal("image/png"),
+        ]),
+        sizeBytes: t.Number({ minimum: 1, maximum: maxUploadBytes }),
+      }),
+    },
+  )
+  .post(
     "/posts/:postId/photos",
     async ({ params, request }) => {
       const { instanceId } = await requireApprovedMember(request);
@@ -95,11 +164,12 @@ export const feedRoutes = new Elysia({ prefix: "/feed" })
 
       const photoId = nanoid();
       const version = nanoid(10);
-      const extension = contentType === "image/png" ? "png" : "webp";
-      const now = new Date();
-      const key = `instances/${instanceId}/photos/${now.getUTCFullYear()}/${String(
-        now.getUTCMonth() + 1,
-      ).padStart(2, "0")}/${params.postId}/${photoId}.${extension}`;
+      const key = buildStorageKey({
+        instanceId,
+        postId: params.postId,
+        photoId,
+        extension: getPhotoExtension(contentType),
+      });
 
       await putImage(key, buffer, contentType);
 

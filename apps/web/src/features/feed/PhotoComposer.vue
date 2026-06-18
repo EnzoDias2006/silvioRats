@@ -45,9 +45,23 @@ async function submit() {
       body: JSON.stringify({ caption: caption.value || undefined }),
     });
 
-    const uploadResponse = await fetch(`/api/feed/posts/${post.id}/photos`, {
+    const presignResponse = await apiFetch<{
+      photoId: string;
+      version: string;
+      key: string;
+      uploadUrl: string;
+      headers: Record<string, string>;
+    }>(`/feed/posts/${post.id}/photos/presign`, {
       method: "POST",
-      headers: { "Content-Type": compressed.type || "image/webp" },
+      body: JSON.stringify({
+        mimeType: compressed.type || "image/webp",
+        sizeBytes: compressed.size,
+      }),
+    });
+
+    const uploadResponse = await fetch(presignResponse.uploadUrl, {
+      method: "PUT",
+      headers: presignResponse.headers,
       body: compressed,
     });
 
@@ -55,7 +69,7 @@ async function submit() {
       throw new Error("Upload da foto falhou.");
     }
 
-    const { photoId, version } = await uploadResponse.json();
+    const { photoId, version } = presignResponse;
 
     await setCachedImage(photoId, version, compressed);
     await queryClient.invalidateQueries({ queryKey: ["feed"] });

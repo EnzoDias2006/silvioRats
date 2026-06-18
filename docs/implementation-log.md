@@ -17,7 +17,7 @@
 
 - Complete BetterAuth UI flows for email/password sign-up and sign-in.
 - Generate and apply Drizzle migrations after dependencies install.
-- Add photo download presign endpoint and wire image cache to rendered feed photos.
+- Added compatible photo presign upload flow for feed images and kept direct upload fallback.
 - Add post creation/upload UI.
 - Add admin approve/reject actions in UI.
 - Add Web Push send logic for approval and hangout events.
