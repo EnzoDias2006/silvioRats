@@ -1,5 +1,4 @@
-import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 import { env } from "./env";
 
 function requireStorageEnv() {
@@ -20,7 +19,7 @@ function requireStorageEnv() {
   };
 }
 
-export function createS3Client() {
+function createS3Client() {
   const storage = requireStorageEnv();
 
   return new S3Client({
@@ -33,20 +32,28 @@ export function createS3Client() {
   });
 }
 
-export async function createUploadUrl(input: {
-  key: string;
-  contentType: string;
-  contentLength: number;
-}) {
-  const storage = requireStorageEnv();
+export async function putImage(key: string, buffer: Uint8Array, contentType: string) {
   const client = createS3Client();
+  const storage = requireStorageEnv();
 
-  const command = new PutObjectCommand({
-    Bucket: storage.bucket,
-    Key: input.key,
-    ContentType: input.contentType,
-    ContentLength: input.contentLength,
-  });
+  await client.send(
+    new PutObjectCommand({
+      Bucket: storage.bucket,
+      Key: key,
+      Body: buffer,
+      ContentType: contentType,
+    }),
+  );
+}
 
-  return getSignedUrl(client, command, { expiresIn: 300 });
+export async function getImageStream(key: string) {
+  const client = createS3Client();
+  const storage = requireStorageEnv();
+
+  return client.send(
+    new GetObjectCommand({
+      Bucket: storage.bucket,
+      Key: key,
+    }),
+  );
 }

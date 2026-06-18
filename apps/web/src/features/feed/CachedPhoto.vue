@@ -5,7 +5,6 @@ import { fetchCachedImage } from "./imageCache";
 const props = defineProps<{
   photoId: string;
   version: string;
-  url?: string;
   alt: string;
 }>();
 
@@ -26,17 +25,10 @@ watchEffect(async () => {
   error.value = false;
   revokeObjectUrl();
 
-  if (!props.url) {
-    error.value = true;
-    loading.value = false;
-    return;
-  }
-
   try {
     const blob = await fetchCachedImage({
       photoId: props.photoId,
       version: props.version,
-      url: props.url,
     });
 
     objectUrl = URL.createObjectURL(blob);

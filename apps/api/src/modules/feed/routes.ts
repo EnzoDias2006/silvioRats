@@ -3,9 +3,10 @@ import { maxUploadBytes } from "@silviorats/shared";
 import { desc, eq } from "drizzle-orm";
 import { Elysia, t } from "elysia";
 import { nanoid } from "nanoid";
-import { env } from "../../lib/env";
-import { createUploadUrl } from "../../lib/storage";
+import { getImageStream, putImage } from "../../lib/storage";
 import { requireApprovedMember } from "../../middleware/session";
+
+const allowedMimeTypes = ["image/webp", "image/jpeg", "image/png"] as const;
 
 export const feedRoutes = new Elysia({ prefix: "/feed" })
   .get("/", async ({ request }) => {
@@ -25,8 +26,6 @@ export const feedRoutes = new Elysia({ prefix: "/feed" })
       .where(eq(posts.instanceId, instanceId))
       .orderBy(desc(posts.occurredAt));
 
-    const publicBaseUrl = env.DO_SPACES_PUBLIC_URL;
-
     const feed = await Promise.all(
       rows.map(async (post) => {
         const postPhotos = await db.query.photos.findMany({
@@ -41,7 +40,6 @@ export const feedRoutes = new Elysia({ prefix: "/feed" })
             mimeType: photo.mimeType,
             width: photo.width,
             height: photo.height,
-            url: publicBaseUrl ? `${publicBaseUrl}${photo.s3Key}` : undefined,
           })),
         };
       }),
@@ -73,11 +71,17 @@ export const feedRoutes = new Elysia({ prefix: "/feed" })
     },
   )
   .post(
-    "/posts/:postId/photos/presign",
-    async ({ body, params, request }) => {
+    "/posts/:postId/photos",
+    async ({ params, request }) => {
       const { instanceId } = await requireApprovedMember(request);
 
-      if (body.sizeBytes > maxUploadBytes) {
+      const contentType = request.headers.get("content-type") || "";
+      if (!(allowedMimeTypes as readonly string[]).includes(contentType)) {
+        throw new Response("Unsupported media type", { status: 415 });
+      }
+
+      const buffer = new Uint8Array(await request.arrayBuffer());
+      if (buffer.byteLength > maxUploadBytes) {
         throw new Response("File too large", { status: 413 });
       }
 
@@ -91,42 +95,56 @@ export const feedRoutes = new Elysia({ prefix: "/feed" })
 
       const photoId = nanoid();
       const version = nanoid(10);
-      const extension = body.mimeType === "image/png" ? "png" : "webp";
+      const extension = contentType === "image/png" ? "png" : "webp";
       const now = new Date();
       const key = `instances/${instanceId}/photos/${now.getUTCFullYear()}/${String(
         now.getUTCMonth() + 1,
       ).padStart(2, "0")}/${params.postId}/${photoId}.${extension}`;
 
+      await putImage(key, buffer, contentType);
+
       await db.insert(photos).values({
         id: photoId,
         postId: params.postId,
         s3Key: key,
-        mimeType: body.mimeType,
-        sizeBytes: body.sizeBytes,
-        width: body.width,
-        height: body.height,
+        mimeType: contentType,
+        sizeBytes: buffer.byteLength,
         version,
       });
 
-      const uploadUrl = await createUploadUrl({
-        key,
-        contentType: body.mimeType,
-        contentLength: body.sizeBytes,
-      });
-
-      return { photoId, uploadUrl, version };
+      return { photoId, version };
     },
     {
       params: t.Object({ postId: t.String() }),
-      body: t.Object({
-        mimeType: t.Union([
-          t.Literal("image/webp"),
-          t.Literal("image/jpeg"),
-          t.Literal("image/png"),
-        ]),
-        sizeBytes: t.Number(),
-        width: t.Optional(t.Number()),
-        height: t.Optional(t.Number()),
-      }),
+    },
+  )
+  .get(
+    "/photos/:photoId/image",
+    async ({ params, request }) => {
+      await requireApprovedMember(request);
+
+      const photo = await db.query.photos.findFirst({
+        where: eq(photos.id, params.photoId),
+      });
+      if (!photo) {
+        throw new Response("Photo not found", { status: 404 });
+      }
+
+      const s3Response = await getImageStream(photo.s3Key);
+
+      if (!s3Response.Body) {
+        throw new Response("Image not available", { status: 404 });
+      }
+
+      // Bun's Response accepts Node.js Readable streams directly
+      return new Response(s3Response.Body as ReadableStream, {
+        headers: {
+          "Content-Type": photo.mimeType,
+          "Cache-Control": "public, max-age=31536000, immutable",
+        },
+      });
+    },
+    {
+      params: t.Object({ photoId: t.String() }),
     },
   );

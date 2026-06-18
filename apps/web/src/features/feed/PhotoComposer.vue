@@ -23,23 +23,6 @@ function onFileChange(event: Event) {
   previewUrl.value = selectedFile ? URL.createObjectURL(selectedFile) : undefined;
 }
 
-async function getImageSize(blob: Blob) {
-  const url = URL.createObjectURL(blob);
-
-  try {
-    const image = await new Promise<HTMLImageElement>((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => resolve(img);
-      img.onerror = reject;
-      img.src = url;
-    });
-
-    return { width: image.naturalWidth, height: image.naturalHeight };
-  } finally {
-    URL.revokeObjectURL(url);
-  }
-}
-
 async function submit() {
   if (!file.value) {
     error.value = "Escolha uma foto.";
@@ -57,36 +40,24 @@ async function submit() {
       fileType: "image/webp",
     });
 
-    const dimensions = await getImageSize(compressed);
     const post = await apiFetch<{ id: string }>("/feed/posts", {
       method: "POST",
       body: JSON.stringify({ caption: caption.value || undefined }),
     });
 
-    const presign = await apiFetch<{ photoId: string; uploadUrl: string; version: string }>(
-      `/feed/posts/${post.id}/photos/presign`,
-      {
-        method: "POST",
-        body: JSON.stringify({
-          mimeType: compressed.type || "image/webp",
-          sizeBytes: compressed.size,
-          width: dimensions.width,
-          height: dimensions.height,
-        }),
-      },
-    );
-
-    const upload = await fetch(presign.uploadUrl, {
-      method: "PUT",
+    const uploadResponse = await fetch(`/api/feed/posts/${post.id}/photos`, {
+      method: "POST",
       headers: { "Content-Type": compressed.type || "image/webp" },
       body: compressed,
     });
 
-    if (!upload.ok) {
+    if (!uploadResponse.ok) {
       throw new Error("Upload da foto falhou.");
     }
 
-    await setCachedImage(presign.photoId, presign.version, compressed);
+    const { photoId, version } = await uploadResponse.json();
+
+    await setCachedImage(photoId, version, compressed);
     await queryClient.invalidateQueries({ queryKey: ["feed"] });
     emit("close");
   } catch (caught) {

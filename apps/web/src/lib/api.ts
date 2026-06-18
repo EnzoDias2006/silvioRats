@@ -29,7 +29,6 @@ export type FeedPhoto = {
   mimeType: string;
   width: number | null;
   height: number | null;
-  url?: string;
 };
 
 export type FeedPost = {

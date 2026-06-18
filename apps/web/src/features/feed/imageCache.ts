@@ -17,11 +17,13 @@ export async function deleteCachedImage(photoId: string, version: string) {
   await del(cacheKey(photoId, version));
 }
 
-export async function fetchCachedImage(input: { photoId: string; version: string; url: string }) {
+export async function fetchCachedImage(input: { photoId: string; version: string }) {
   const cached = await getCachedImage(input.photoId, input.version);
   if (cached) return cached;
 
-  const response = await fetch(input.url);
+  const response = await fetch(
+    `/api/feed/photos/${input.photoId}/image?version=${input.version}`,
+  );
   if (!response.ok) throw new Error("Failed to download image");
 
   const blob = await response.blob();
