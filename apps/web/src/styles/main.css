@@ -320,8 +320,7 @@ li {
   place-items: center;
   color: var(--text-soft);
   background:
-    linear-gradient(135deg, rgba(201, 149, 107, 0.18), transparent),
-    rgba(255, 255, 255, 0.04);
+    linear-gradient(135deg, rgba(201, 149, 107, 0.18), transparent), rgba(255, 255, 255, 0.04);
 }
 
 .feed-photo {
@@ -352,7 +351,9 @@ li {
   border: 1px solid var(--border-strong);
   border-radius: 32px;
   background: rgba(13, 10, 8, 0.82);
-  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.48), 0 2px 10px rgba(0, 0, 0, 0.25);
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.48),
+    0 2px 10px rgba(0, 0, 0, 0.25);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   transform: translateX(50%);
