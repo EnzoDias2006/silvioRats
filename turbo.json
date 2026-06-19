@@ -1,0 +1,36 @@
+{
+  "$schema": "https://turbo.build/schema.json",
+  "ui": "stream",
+  "globalDependencies": ["bun.lock", ".env", ".env.example", ".gitignore"],
+  "globalEnv": ["NODE_ENV", "API_URL", "APP_URL", "APP_URLS", "SILVIO_INSTANCE_ID"],
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", "apps/web/dist/**"]
+    },
+    "typecheck": {
+      "dependsOn": ["^typecheck"],
+      "outputs": []
+    },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": []
+    },
+    "lint": {
+      "outputs": []
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "@silviorats/db#build": {
+      "outputs": []
+    },
+    "@silviorats/shared#build": {
+      "outputs": []
+    },
+    "@silviorats/api#build": {
+      "outputs": []
+    }
+  }
+}

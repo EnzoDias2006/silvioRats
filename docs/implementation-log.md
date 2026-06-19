@@ -5,7 +5,7 @@
 - Created Bun workspace monorepo.
 - Added API app with Elysia, BetterAuth scaffold, Drizzle SQLite schema, DigitalOcean Spaces presign helper, membership guards, feed, hangout, admin, and push route skeletons.
 - Added Vue PWA app with install-only landing, standalone app shell, auth gate placeholder, feed view, hangouts view, admin view, and IndexedDB image cache utility.
-- Added Dockerfile, GitHub Actions GHCR deploy workflow, lefthook, Biome, and docs.
+- Added Dockerfile, GitHub Actions GHCR deploy workflow, lefthook, Biome, Turbo task orchestration, and cache-aware task config.
 
 ## PWA Installability Fix
 
