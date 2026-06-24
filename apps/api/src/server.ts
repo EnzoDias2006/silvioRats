@@ -1,12 +1,15 @@
 import { existsSync, statSync } from "node:fs";
 import { join } from "node:path";
+import { logger as elysiaLogger } from "@bogeychan/elysia-logger";
+import { openapi } from "@elysia/openapi";
 import cors from "@elysiajs/cors";
-import swagger from "@elysiajs/swagger";
-import { db, memberships, user } from "@silviorats/db";
+import { account, db, memberships, user } from "@silviorats/db";
 import { migrationsFolder } from "@silviorats/db/migrate";
+import { hashPassword } from "better-auth/crypto";
 import { and, eq } from "drizzle-orm";
 import { migrate } from "drizzle-orm/bun-sqlite/migrator";
 import { Elysia } from "elysia";
+import { nanoid } from "nanoid";
 import { auth } from "./auth/auth";
 import { env, isProduction } from "./lib/env";
 import { adminRoutes } from "./modules/admin/routes";
@@ -26,46 +29,104 @@ async function applyMigrations() {
 }
 
 async function bootstrapAdmin() {
-  if (!env.BOOTSTRAP_ADMIN_EMAIL) return;
+  const bootstrapEmail = env.BOOTSTRAP_ADMIN_EMAIL?.toLowerCase();
+  if (!bootstrapEmail) return;
 
-  const admin = await db.query.user.findFirst({ where: eq(user.email, env.BOOTSTRAP_ADMIN_EMAIL) });
-  let resolvedAdmin = admin;
-
-  if (!admin || env.BOOTSTRAP_ADMIN_FORCE_RESET) {
-    if (!env.BOOTSTRAP_ADMIN_PASSWORD) {
-      console.warn("Bootstrap admin skipped: password missing.");
-      return;
-    }
-
-    if (admin && env.BOOTSTRAP_ADMIN_FORCE_RESET) {
-      await db.delete(memberships).where(eq(memberships.userId, admin.id));
-      await db.delete(user).where(eq(user.id, admin.id));
-      resolvedAdmin = undefined;
-    }
-
-    await auth.api.signUpEmail({
-      body: {
-        name: env.BOOTSTRAP_ADMIN_NAME,
-        email: env.BOOTSTRAP_ADMIN_EMAIL,
-        password: env.BOOTSTRAP_ADMIN_PASSWORD,
-      },
-    });
-
-    resolvedAdmin = await db.query.user.findFirst({
-      where: eq(user.email, env.BOOTSTRAP_ADMIN_EMAIL),
-    });
-  }
-
-  if (!resolvedAdmin) return;
-
-  const existing = await db.query.memberships.findFirst({
-    where: and(
-      eq(memberships.userId, resolvedAdmin.id),
-      eq(memberships.instanceId, env.SILVIO_INSTANCE_ID),
-    ),
+  console.info("[auth.bootstrap] start", {
+    email: bootstrapEmail,
+    hasPassword: Boolean(env.BOOTSTRAP_ADMIN_PASSWORD),
+    forceReset: env.BOOTSTRAP_ADMIN_FORCE_RESET,
   });
 
-  if (existing?.role === "admin" && existing.status === "approved") return;
+  const admin = await db.query.user.findFirst({
+    where: eq(user.email, bootstrapEmail),
+  });
+
+  console.info("[auth.bootstrap] user lookup", {
+    email: bootstrapEmail,
+    found: Boolean(admin),
+    userId: admin?.id,
+  });
+
+  if (!admin && !env.BOOTSTRAP_ADMIN_PASSWORD) {
+    console.warn("[auth.bootstrap] skipped: password missing.");
+    return;
+  }
+
+  if (!admin) {
+    try {
+      await auth.api.signUpEmail({
+        body: {
+          name: env.BOOTSTRAP_ADMIN_NAME,
+          email: bootstrapEmail,
+          password: env.BOOTSTRAP_ADMIN_PASSWORD,
+        },
+      } as {
+        body: { name: string; email: string; password: string };
+      });
+
+      console.info("[auth.bootstrap] sign-up complete", {
+        email: bootstrapEmail,
+      });
+    } catch (error) {
+      console.error("[auth.bootstrap] sign-up failed.", error);
+      return;
+    }
+  }
+
+  const resolvedAdmin = await db.query.user.findFirst({
+    where: eq(user.email, bootstrapEmail),
+  });
+
+  console.info("[auth.bootstrap] resolved user", {
+    email: bootstrapEmail,
+    found: Boolean(resolvedAdmin),
+    userId: resolvedAdmin?.id,
+  });
+
+  if (!resolvedAdmin) {
+    console.error("[auth.bootstrap] user not found after sign-up.");
+    return;
+  }
+
+  if (env.BOOTSTRAP_ADMIN_PASSWORD) {
+    const passwordHash = await hashPassword(env.BOOTSTRAP_ADMIN_PASSWORD);
+    const credentialAccount = await db.query.account.findFirst({
+      where: and(eq(account.userId, resolvedAdmin.id), eq(account.providerId, "credential")),
+    });
+
+    console.info("[auth.bootstrap] credential lookup", {
+      email: bootstrapEmail,
+      accountFound: Boolean(credentialAccount),
+    });
+
+    if (credentialAccount) {
+      await db
+        .update(account)
+        .set({ password: passwordHash, updatedAt: new Date() })
+        .where(eq(account.id, credentialAccount.id));
+
+      console.info("[auth.bootstrap] credential updated", {
+        email: bootstrapEmail,
+        userId: resolvedAdmin.id,
+      });
+    } else {
+      await db.insert(account).values({
+        id: nanoid(),
+        accountId: resolvedAdmin.id,
+        providerId: "credential",
+        userId: resolvedAdmin.id,
+        password: passwordHash,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      });
+
+      console.info("[auth.bootstrap] credential created", {
+        email: bootstrapEmail,
+        userId: resolvedAdmin.id,
+      });
+    }
+  }
 
   await db
     .insert(memberships)
@@ -78,8 +139,19 @@ async function bootstrapAdmin() {
     })
     .onConflictDoUpdate({
       target: [memberships.userId, memberships.instanceId],
-      set: { status: "approved", role: "admin", approvedAt: new Date(), updatedAt: new Date() },
+      set: {
+        status: "approved",
+        role: "admin",
+        approvedAt: new Date(),
+        updatedAt: new Date(),
+      },
     });
+
+  console.info("[auth.bootstrap] membership upserted", {
+    email: bootstrapEmail,
+    userId: resolvedAdmin.id,
+    instanceId: env.SILVIO_INSTANCE_ID,
+  });
 }
 
 function getContentType(path: string) {
@@ -126,14 +198,35 @@ function serveIndex() {
 
 const app = new Elysia()
   .use(
+    elysiaLogger({
+      level: isProduction ? "info" : "debug",
+      autoLogging: {
+        ignore(ctx) {
+          return !ctx.path.startsWith("/api/auth");
+        },
+      },
+    }),
+  )
+  .use(
     cors({
       origin: [env.APP_URL, ...env.APP_URLS],
       credentials: true,
     }),
   )
-  .use(swagger())
+  .use(
+    openapi({
+      path: "/openapi",
+      documentation: {
+        info: {
+          title: "SilvioRats API",
+          version: "1.0.0",
+          description: "API for SilvioRats web and PWA clients.",
+        },
+      },
+    }),
+  )
   .get("/health", () => ({ ok: true, service: "silviorats-api" }))
-  .all("/api/auth/*", async ({ request }) => auth.handler(request))
+  .mount(auth.handler)
   .get("/api/me", async ({ request }) => {
     const session = await auth.api.getSession({ headers: request.headers });
     if (!session?.user) return new Response("Unauthorized", { status: 401 });
