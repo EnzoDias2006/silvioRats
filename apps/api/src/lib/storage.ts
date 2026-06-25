@@ -30,6 +30,7 @@ function createS3Client() {
       accessKeyId: storage.accessKeyId,
       secretAccessKey: storage.secretAccessKey,
     },
+    requestChecksumCalculation: "WHEN_REQUIRED",
   });
 }
 

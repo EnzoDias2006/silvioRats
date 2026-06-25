@@ -3,13 +3,11 @@ import { join } from "node:path";
 import { logger as elysiaLogger } from "@bogeychan/elysia-logger";
 import { openapi } from "@elysia/openapi";
 import cors from "@elysiajs/cors";
-import { account, db, memberships, user } from "@silviorats/db";
+import { db, memberships } from "@silviorats/db";
 import { migrationsFolder } from "@silviorats/db/migrate";
-import { hashPassword } from "better-auth/crypto";
 import { and, eq } from "drizzle-orm";
 import { migrate } from "drizzle-orm/bun-sqlite/migrator";
 import { Elysia } from "elysia";
-import { nanoid } from "nanoid";
 import { auth } from "./auth/auth";
 import { env, isProduction } from "./lib/env";
 import { adminRoutes } from "./modules/admin/routes";
@@ -26,132 +24,6 @@ async function applyMigrations() {
   }
 
   migrate(db, { migrationsFolder });
-}
-
-async function bootstrapAdmin() {
-  const bootstrapEmail = env.BOOTSTRAP_ADMIN_EMAIL?.toLowerCase();
-  if (!bootstrapEmail) return;
-
-  console.info("[auth.bootstrap] start", {
-    email: bootstrapEmail,
-    hasPassword: Boolean(env.BOOTSTRAP_ADMIN_PASSWORD),
-    forceReset: env.BOOTSTRAP_ADMIN_FORCE_RESET,
-  });
-
-  const admin = await db.query.user.findFirst({
-    where: eq(user.email, bootstrapEmail),
-  });
-
-  console.info("[auth.bootstrap] user lookup", {
-    email: bootstrapEmail,
-    found: Boolean(admin),
-    userId: admin?.id,
-  });
-
-  if (!admin && !env.BOOTSTRAP_ADMIN_PASSWORD) {
-    console.warn("[auth.bootstrap] skipped: password missing.");
-    return;
-  }
-
-  if (!admin) {
-    try {
-      await auth.api.signUpEmail({
-        body: {
-          name: env.BOOTSTRAP_ADMIN_NAME,
-          email: bootstrapEmail,
-          password: env.BOOTSTRAP_ADMIN_PASSWORD,
-        },
-      } as {
-        body: { name: string; email: string; password: string };
-      });
-
-      console.info("[auth.bootstrap] sign-up complete", {
-        email: bootstrapEmail,
-      });
-    } catch (error) {
-      console.error("[auth.bootstrap] sign-up failed.", error);
-      return;
-    }
-  }
-
-  const resolvedAdmin = await db.query.user.findFirst({
-    where: eq(user.email, bootstrapEmail),
-  });
-
-  console.info("[auth.bootstrap] resolved user", {
-    email: bootstrapEmail,
-    found: Boolean(resolvedAdmin),
-    userId: resolvedAdmin?.id,
-  });
-
-  if (!resolvedAdmin) {
-    console.error("[auth.bootstrap] user not found after sign-up.");
-    return;
-  }
-
-  if (env.BOOTSTRAP_ADMIN_PASSWORD) {
-    const passwordHash = await hashPassword(env.BOOTSTRAP_ADMIN_PASSWORD);
-    const credentialAccount = await db.query.account.findFirst({
-      where: and(eq(account.userId, resolvedAdmin.id), eq(account.providerId, "credential")),
-    });
-
-    console.info("[auth.bootstrap] credential lookup", {
-      email: bootstrapEmail,
-      accountFound: Boolean(credentialAccount),
-    });
-
-    if (credentialAccount) {
-      await db
-        .update(account)
-        .set({ password: passwordHash, updatedAt: new Date() })
-        .where(eq(account.id, credentialAccount.id));
-
-      console.info("[auth.bootstrap] credential updated", {
-        email: bootstrapEmail,
-        userId: resolvedAdmin.id,
-      });
-    } else {
-      await db.insert(account).values({
-        id: nanoid(),
-        accountId: resolvedAdmin.id,
-        providerId: "credential",
-        userId: resolvedAdmin.id,
-        password: passwordHash,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      });
-
-      console.info("[auth.bootstrap] credential created", {
-        email: bootstrapEmail,
-        userId: resolvedAdmin.id,
-      });
-    }
-  }
-
-  await db
-    .insert(memberships)
-    .values({
-      userId: resolvedAdmin.id,
-      instanceId: env.SILVIO_INSTANCE_ID,
-      status: "approved",
-      role: "admin",
-      approvedAt: new Date(),
-    })
-    .onConflictDoUpdate({
-      target: [memberships.userId, memberships.instanceId],
-      set: {
-        status: "approved",
-        role: "admin",
-        approvedAt: new Date(),
-        updatedAt: new Date(),
-      },
-    });
-
-  console.info("[auth.bootstrap] membership upserted", {
-    email: bootstrapEmail,
-    userId: resolvedAdmin.id,
-    instanceId: env.SILVIO_INSTANCE_ID,
-  });
 }
 
 function getContentType(path: string) {
@@ -239,18 +111,12 @@ const app = new Elysia()
     });
 
     if (!membership) {
-      const status = session.user.email === env.BOOTSTRAP_ADMIN_EMAIL ? "approved" : "pending";
-      const role = session.user.email === env.BOOTSTRAP_ADMIN_EMAIL ? "admin" : "member";
-
       await db.insert(memberships).values({
         userId: session.user.id,
         instanceId: env.SILVIO_INSTANCE_ID,
-        status,
-        role,
-        approvedAt: status === "approved" ? new Date() : undefined,
       });
 
-      return { user: session.user, membership: { status, role } };
+      return { user: session.user, membership: { status: "pending", role: "member" } };
     }
 
     return { user: session.user, membership };
@@ -273,7 +139,6 @@ const app = new Elysia()
   });
 
 await applyMigrations();
-await bootstrapAdmin();
 
 app.listen(env.PORT);
 
