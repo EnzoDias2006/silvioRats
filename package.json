@@ -19,10 +19,10 @@
     "prepare": "git rev-parse --is-inside-work-tree >/dev/null 2>&1 && lefthook install || true"
   },
   "devDependencies": {
-    "@biomejs/biome": "latest",
-    "lefthook": "latest",
-    "turbo": "latest",
-    "typescript": "latest"
+    "@biomejs/biome": "2.5.1",
+    "lefthook": "2.1.9",
+    "turbo": "2.10.0",
+    "typescript": "6.0.3"
   },
   "dependencies": {
     "@bogeychan/elysia-logger": "^0.1.10",
