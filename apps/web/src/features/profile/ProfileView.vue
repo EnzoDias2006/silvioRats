@@ -37,10 +37,12 @@ async function signOut() {
   <section v-else class="feed-list">
     <article class="post-card compact">
       <header class="post-meta">
-        <strong>{{ me.data.value?.user.name }}</strong>
-        <span>{{ me.data.value?.membership.role === "admin" ? "Admin" : "Member" }}</span>
+        <div>
+          <strong>{{ me.data.value?.user.name }}</strong>
+          <p class="post-timestamp">{{ me.data.value?.user.email }}</p>
+        </div>
+        <span class="post-chip">{{ me.data.value?.membership.role === "admin" ? "Admin" : "Member" }}</span>
       </header>
-      <p>{{ me.data.value?.user.email }}</p>
       <div class="profile-summary">
         <div class="profile-avatar">
           <UserRound :size="20" />

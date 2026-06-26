@@ -36,8 +36,13 @@ const feed = useQuery({
   <section v-else class="feed-list">
     <article v-for="post in feed.data.value" :key="post.id" class="post-card">
       <header class="post-meta">
-        <strong>{{ post.authorName }}</strong>
-        <span>{{ formatDistanceToNow(new Date(post.occurredAt), { addSuffix: true, locale: ptBR }) }}</span>
+        <div>
+          <strong>{{ post.authorName }}</strong>
+          <p class="post-timestamp">
+            {{ formatDistanceToNow(new Date(post.occurredAt), { addSuffix: true, locale: ptBR }) }}
+          </p>
+        </div>
+        <span class="post-chip">Bar memory</span>
       </header>
 
       <CachedPhoto
@@ -48,7 +53,7 @@ const feed = useQuery({
       />
       <div v-else class="photo-placeholder">Sem foto neste registro.</div>
 
-      <p v-if="post.caption">{{ post.caption }}</p>
+      <p v-if="post.caption" class="post-caption">{{ post.caption }}</p>
     </article>
 
     <article v-if="feed.data.value?.length === 0" class="state-card">

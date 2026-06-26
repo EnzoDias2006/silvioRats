@@ -53,10 +53,13 @@ async function decide(userId: string, decision: "approve" | "reject") {
 
     <article v-for="request in requests.data.value" :key="request.userId" class="post-card compact">
       <header class="post-meta">
-        <strong>{{ request.name }}</strong>
-        <span>{{ request.createdAt ? new Date(request.createdAt).toLocaleString("pt-BR") : "Novo pedido" }}</span>
+        <div>
+          <strong>{{ request.name }}</strong>
+          <p class="post-timestamp">{{ request.createdAt ? new Date(request.createdAt).toLocaleString("pt-BR") : "Novo pedido" }}</p>
+        </div>
+        <span class="post-chip">Review</span>
       </header>
-      <span>{{ request.email }}</span>
+      <span class="post-caption">{{ request.email }}</span>
       <div class="admin-actions">
         <button
           class="primary-button"

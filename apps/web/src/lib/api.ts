@@ -1,5 +1,31 @@
+const API_URL = import.meta.env.VITE_API_URL;
+
+export type FeedPhoto = {
+  id: string;
+  version: string;
+};
+
+export type FeedPost = {
+  id: string;
+  authorName: string;
+  caption: string | null;
+  occurredAt: string;
+  photos: FeedPhoto[];
+};
+
+export type MeResponse = {
+  user: {
+    name: string;
+    email: string;
+  };
+  membership: {
+    role: "admin" | "member";
+    status: "approved" | "pending" | "blocked";
+  };
+};
+
 export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`/api${path}`, {
+  const response = await fetch(`${API_URL}/api${path}`, {
     credentials: "include",
     headers: {
       "Content-Type": "application/json",
@@ -9,34 +35,8 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> 
   });
 
   if (!response.ok) {
-    throw new Error(await response.text());
+    throw new Error(`Request failed with status ${response.status}`);
   }
 
   return response.json() as Promise<T>;
 }
-
-export type MeResponse = {
-  user: { id: string; name: string; email: string; image?: string | null };
-  membership: {
-    status: "pending" | "approved" | "rejected" | "suspended";
-    role: "member" | "admin";
-  };
-};
-
-export type FeedPhoto = {
-  id: string;
-  version: string;
-  mimeType: string;
-  width: number | null;
-  height: number | null;
-};
-
-export type FeedPost = {
-  id: string;
-  caption: string | null;
-  occurredAt: string;
-  createdAt: string;
-  authorName: string;
-  authorImage: string | null;
-  photos: FeedPhoto[];
-};
