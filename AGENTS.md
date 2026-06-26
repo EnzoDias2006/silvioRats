@@ -45,6 +45,7 @@
 
 ## Hooks And Deploy
 
+- The agent should use the "biome check ." before commiting or approving any kind of batch
 - Lefthook pre-commit runs `bun run lint` and `bun run typecheck`; pre-push runs `bun run test`.
 - Docker build runs `bun install --frozen-lockfile` then `bun run build`; runtime command is `bun apps/api/src/server.ts`.
 - Deployment docs expect GHCR image `ghcr.io/enzodias2006/silviorats:latest` and Dokploy webhook/registry setup.
