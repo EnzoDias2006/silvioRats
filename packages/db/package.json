@@ -14,12 +14,12 @@
     "db:migrate": "bun --env-file=../../.env src/migrate.ts"
   },
   "dependencies": {
-    "drizzle-orm": "latest",
-    "drizzle-zod": "latest"
+    "drizzle-orm": "0.45.2",
+    "drizzle-zod": "0.8.3"
   },
   "devDependencies": {
-    "@types/bun": "latest",
-    "drizzle-kit": "latest",
-    "typescript": "latest"
+    "@types/bun": "1.3.14",
+    "drizzle-kit": "0.31.10",
+    "typescript": "6.0.3"
   }
 }

@@ -5,8 +5,7 @@
     "": {
       "name": "silviorats",
       "dependencies": {
-        "@bogeychan/elysia-logger": "^0.1.10",
-        "@silviorats/api": "./apps/api",
+        "@bogeychan/elysia-logger": "0.1.10",
       },
       "devDependencies": {
         "@biomejs/biome": "2.5.1",
@@ -18,72 +17,72 @@
     "apps/api": {
       "name": "@silviorats/api",
       "dependencies": {
-        "@aws-sdk/client-s3": "latest",
-        "@aws-sdk/s3-request-presigner": "latest",
-        "@elysiajs/cors": "latest",
-        "@elysiajs/swagger": "latest",
+        "@aws-sdk/client-s3": "3.1075.0",
+        "@aws-sdk/s3-request-presigner": "3.1075.0",
+        "@elysiajs/cors": "1.4.2",
+        "@elysiajs/swagger": "1.3.1",
         "@silviorats/db": "workspace:*",
         "@silviorats/shared": "workspace:*",
-        "better-auth": "latest",
-        "drizzle-orm": "latest",
-        "elysia": "latest",
-        "file-type": "latest",
-        "nanoid": "latest",
-        "pino": "latest",
-        "web-push": "latest",
-        "zod": "latest",
+        "better-auth": "1.6.22",
+        "drizzle-orm": "0.45.2",
+        "elysia": "1.4.29",
+        "file-type": "22.0.1",
+        "nanoid": "3.3.15",
+        "pino": "10.3.1",
+        "web-push": "3.6.7",
+        "zod": "3.25.76",
       },
       "devDependencies": {
-        "@types/bun": "latest",
-        "typescript": "latest",
+        "@types/bun": "1.3.14",
+        "typescript": "6.0.3",
       },
     },
     "apps/web": {
       "name": "@silviorats/web",
       "dependencies": {
-        "@tanstack/vue-query": "latest",
-        "@vite-pwa/assets-generator": "latest",
-        "@vueuse/core": "latest",
-        "browser-image-compression": "latest",
-        "date-fns": "latest",
-        "idb-keyval": "latest",
-        "lucide-vue-next": "latest",
-        "pinia": "latest",
-        "tailwindcss": "latest",
-        "vite-plugin-pwa": "latest",
-        "vue": "latest",
-        "vue-router": "latest",
-        "workbox-window": "latest",
-        "zod": "latest",
+        "@tanstack/vue-query": "5.101.1",
+        "@vite-pwa/assets-generator": "1.0.2",
+        "@vueuse/core": "14.3.0",
+        "browser-image-compression": "2.0.2",
+        "date-fns": "4.4.0",
+        "idb-keyval": "6.2.5",
+        "lucide-vue-next": "1.0.0",
+        "pinia": "3.0.4",
+        "tailwindcss": "4.3.1",
+        "vite-plugin-pwa": "1.3.0",
+        "vue": "3.5.39",
+        "vue-router": "5.1.0",
+        "workbox-window": "7.4.1",
+        "zod": "3.25.76",
       },
       "devDependencies": {
-        "@vitejs/plugin-vue": "latest",
-        "@vue/tsconfig": "latest",
-        "vite": "latest",
-        "vitest": "latest",
-        "vue-tsc": "latest",
+        "@vitejs/plugin-vue": "6.0.7",
+        "@vue/tsconfig": "0.9.1",
+        "vite": "8.1.0",
+        "vitest": "4.1.9",
+        "vue-tsc": "3.3.5",
       },
     },
     "packages/db": {
       "name": "@silviorats/db",
       "dependencies": {
-        "drizzle-orm": "latest",
-        "drizzle-zod": "latest",
+        "drizzle-orm": "0.45.2",
+        "drizzle-zod": "0.8.3",
       },
       "devDependencies": {
-        "@types/bun": "latest",
-        "drizzle-kit": "latest",
-        "typescript": "latest",
+        "@types/bun": "1.3.14",
+        "drizzle-kit": "0.31.10",
+        "typescript": "6.0.3",
       },
     },
     "packages/shared": {
       "name": "@silviorats/shared",
       "dependencies": {
-        "zod": "latest",
+        "zod": "3.25.76",
       },
       "devDependencies": {
-        "@types/bun": "latest",
-        "typescript": "latest",
+        "@types/bun": "1.3.14",
+        "typescript": "6.0.3",
       },
     },
   },
@@ -1170,7 +1169,7 @@
 
     "muggle-string": ["muggle-string@0.4.1", "", {}, "sha512-VNTrAak/KhO2i8dqqnqnAHOa3cYBwXEZe9h+D5h/1ZqFSTEFHdM65lR7RoIqq3tBBYavsOXV84NoHXZ0AkPyqQ=="],
 
-    "nanoid": ["nanoid@5.1.16", "", { "bin": { "nanoid": "bin/nanoid.js" } }, "sha512-kVrnsrJqMR8+oLJnGEmSWw9BivK5mt7H3FZatVRjrc5wGqFYuBxX1yG7+A7Gi5AefkX6t/oCkizcQgpu0cY1dQ=="],
+    "nanoid": ["nanoid@3.3.15", "", { "bin": { "nanoid": "bin/nanoid.cjs" } }, "sha512-y7Wygv/7mEOvxTuEQDB8StXdMRBWf1kR/tlhAzBRUFkB2jfcLOAxO/SHmOO2zgz1pVgK29/kyupn059/bCHdjA=="],
 
     "nanostores": ["nanostores@1.3.0", "", {}, "sha512-XPUa/jz+P1oJvN9VBxw4L9MtdFfaH3DAryqPssqhb2kXjmb9npz0dly6rCsgFWOPr4Yg9mTfM3MDZgZZ+7A3lA=="],
 
@@ -1502,7 +1501,7 @@
 
     "zhead": ["zhead@2.2.4", "", {}, "sha512-8F0OI5dpWIA5IGG5NHUg9staDwz/ZPxZtvGVf01j7vHqSyZ0raHY+78atOVxRqb73AotX22uV1pXt3gYSstGag=="],
 
-    "zod": ["zod@4.4.3", "", {}, "sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ=="],
+    "zod": ["zod@3.25.76", "", {}, "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="],
 
     "@babel/code-frame/@babel/helper-validator-identifier": ["@babel/helper-validator-identifier@7.29.7", "", {}, "sha512-qehxGkRj55h/ff8EMaJ+cYhyaKlHIxqYDn682wQD7RNp9UujOQsHog2uS0r2vzr4pW+sXf90NeeayjcNaX3fFg=="],
 
@@ -1550,6 +1549,8 @@
 
     "@babel/traverse/@babel/types": ["@babel/types@7.29.7", "", { "dependencies": { "@babel/helper-string-parser": "^7.29.7", "@babel/helper-validator-identifier": "^7.29.7" } }, "sha512-4zBIxpPzowiZpusoFkyGVwakdRJUyuH5PxQ/PrqghfdFWWasvnCdPfQXHrenDai+gyLARulZjZowCOj6fjT4pA=="],
 
+    "@better-auth/core/zod": ["zod@4.4.3", "", {}, "sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ=="],
+
     "@esbuild-kit/core-utils/esbuild": ["esbuild@0.18.20", "", { "optionalDependencies": { "@esbuild/android-arm": "0.18.20", "@esbuild/android-arm64": "0.18.20", "@esbuild/android-x64": "0.18.20", "@esbuild/darwin-arm64": "0.18.20", "@esbuild/darwin-x64": "0.18.20", "@esbuild/freebsd-arm64": "0.18.20", "@esbuild/freebsd-x64": "0.18.20", "@esbuild/linux-arm": "0.18.20", "@esbuild/linux-arm64": "0.18.20", "@esbuild/linux-ia32": "0.18.20", "@esbuild/linux-loong64": "0.18.20", "@esbuild/linux-mips64el": "0.18.20", "@esbuild/linux-ppc64": "0.18.20", "@esbuild/linux-riscv64": "0.18.20", "@esbuild/linux-s390x": "0.18.20", "@esbuild/linux-x64": "0.18.20", "@esbuild/netbsd-x64": "0.18.20", "@esbuild/openbsd-x64": "0.18.20", "@esbuild/sunos-x64": "0.18.20", "@esbuild/win32-arm64": "0.18.20", "@esbuild/win32-ia32": "0.18.20", "@esbuild/win32-x64": "0.18.20" }, "bin": { "esbuild": "bin/esbuild" } }, "sha512-ceqxoedUrcayh7Y7ZX6NdbbDzGROiyVBgC4PriJThBKSVPWnnFHZAkfI1lJT8QFkOwH4qOS2SJkS4wvpGl8BpA=="],
 
     "@rollup/pluginutils/estree-walker": ["estree-walker@2.0.2", "", {}, "sha512-Rfkk/Mp/DL7JVje3u18FxFujQlTNR2q6QfMSMB7AvCBx91NGj/ba3kCfza0f6dVDbw7YlRf/nDrn7pQrCCyQ/w=="],
@@ -1570,6 +1571,8 @@
 
     "babel-plugin-polyfill-corejs2/semver": ["semver@6.3.1", "", { "bin": { "semver": "bin/semver.js" } }, "sha512-BR7VvDCVHO+q2xBEWskxS6DJE1qRnb7DxzUrogb71CWoSficBxYsiAGd+Kl0mmq/MprG9yArRkyrQxTO6XjMzA=="],
 
+    "better-auth/zod": ["zod@4.4.3", "", {}, "sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ=="],
+
     "filelist/minimatch": ["minimatch@5.1.9", "", { "dependencies": { "brace-expansion": "^2.0.1" } }, "sha512-7o1wEA2RyMP7Iu7GNba9vc0RWWGACJOCZBJX2GJWip0ikV+wcOsgVuY9uE8CPiyQhkGFSlhuSkZPavN7u1c2Fw=="],
 
     "local-pkg/quansync": ["quansync@0.2.11", "", {}, "sha512-AifT7QEbW9Nri4tAwR5M/uzpBuqfZf+zwaEM/QkzEjj7NBuFD2rBuy0K3dE+8wltbezDV7JMA0WfnCPYRSYbXA=="],
@@ -1583,8 +1586,6 @@
     "pinia/@vue/devtools-api": ["@vue/devtools-api@7.7.10", "", { "dependencies": { "@vue/devtools-kit": "^7.7.10" } }, "sha512-KxtEpUOOpFz/qOGRrAwA36QF7DqIA+FXgCYit9mk9wjbaZt0sXOFz81ElOZtKA4HbWHUdwNjZHBFsFFyp5BZiA=="],
 
     "pkg-types/pathe": ["pathe@2.0.3", "", {}, "sha512-WUjGcAqP1gQacoQe+OBJsFA7Ld4DyXuUIjZ5cc75cLHvJ7dtNsTugphxIADwspS+AraAUePCKrSVtPLFj/F88w=="],
-
-    "postcss/nanoid": ["nanoid@3.3.15", "", { "bin": { "nanoid": "bin/nanoid.cjs" } }, "sha512-y7Wygv/7mEOvxTuEQDB8StXdMRBWf1kR/tlhAzBRUFkB2jfcLOAxO/SHmOO2zgz1pVgK29/kyupn059/bCHdjA=="],
 
     "source-map-support/source-map": ["source-map@0.6.1", "", {}, "sha512-UjgapumWlbMhkBgzT7Ykc5YXUT46F0iKu8SGXq0bcwP5dz/h0Plj6enJqjz1Zbq2l5WaqYnrVbwWOWMyF3F47g=="],
 
@@ -1698,7 +1699,7 @@
 
     "@scalar/themes/@scalar/types/@scalar/openapi-types": ["@scalar/openapi-types@0.2.0", "", { "dependencies": { "zod": "^3.23.8" } }, "sha512-waiKk12cRCqyUCWTOX0K1WEVX46+hVUK+zRPzAahDJ7G0TApvbNkuy5wx7aoUyEk++HHde0XuQnshXnt8jsddA=="],
 
-    "@scalar/themes/@scalar/types/zod": ["zod@3.25.76", "", {}, "sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ=="],
+    "@scalar/themes/@scalar/types/nanoid": ["nanoid@5.1.16", "", { "bin": { "nanoid": "bin/nanoid.js" } }, "sha512-kVrnsrJqMR8+oLJnGEmSWw9BivK5mt7H3FZatVRjrc5wGqFYuBxX1yG7+A7Gi5AefkX6t/oCkizcQgpu0cY1dQ=="],
 
     "ast-walker-scope/@babel/types/@babel/helper-string-parser": ["@babel/helper-string-parser@7.29.7", "", {}, "sha512-Pb5ijPrZ89GDH8223L4UP8i6QApWxs04RbPQJTeWDV0/keR2E36MeKnyr6LYmUUvqRRI+Iv87SuF1W6ErINzYw=="],
 
